@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#container {
+				width: 800px;
+				margin: 40px auto;
+				background-color: aquamarine;
+			}
+			
+			#score {
+				position: absolute;
+				left: 30px;
+				top: 40px;
+				background-color: cyan;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container">
+			<canvas id="canvas" width="800" height="600">
+		 	浏览器不支持
+			 </canvas>
+		</div>
+
+		<p id="score">分数:0</p>
+	</body>
+	<script src="js/背景.js"></script>
+	<script src="js/蛇.js"></script>
+	<script src="js/食物.js"></script>
+	<script src="js/操作.js"></script>
+
+	<script type="text/javascript">
+		// 获取 canvas 元素
+		var canvas = document.getElementById("canvas");
+		var context = canvas.getContext("2d");
+		// 分数div
+		var scoreDiv = document.getElementById("score");
+
+		// 定义格子的大小  横向数量  纵向数量
+		var boxSize = 20;
+		var rows = 30;
+		var cols = 40;
+
+		// 定义一个锁，防止手速快的人，在蛇移动一格之内，做出多余一次的操作。
+		var lock = false;
+
+		// 定义时间变量，控制定时器
+		var timer = null;
+
+		// 定义记录分数的变量
+		var score = 0;
+
+		// 创建棋盘对象
+		var background = new DrawBackGround();
+		// 创建蛇对象
+		var snake = new Snake();
+		// 创建食物对象
+		var food = new Food();
+		// 创建操作类对象
+		var handle = new HandleGame();
+
+		background.drawBack();
+		snake.drawSnakeBody();
+		food.drawFood();
+
+		// 让蛇移动起来
+		timer = setInterval(function() {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			lock = true;
+			background.drawBack();
+			food.drawFood();
+			// 移动蛇
+			snake.moveSnake();
+			// 判断蛇是否死亡
+			handle.isDieHandle(snake);
+			// 判断是否吃到了食物
+			handle.isEatFood(snake, food);
+		}, 200);
+
+		// 键盘处理（控制蛇的方向）
+		document.onkeydown = function(event) {
+			var ev = event || window.event;
+			switch(ev.keyCode) {
+				case 37: // 左
+					if(snake.direction != 1 && snake.direction != 0 && lock == true) {
+						snake.direction = 0;
+						lock = false;
+					}
+
+					break;
+				case 38: // 上
+					if(snake.direction != 3 && snake.direction != 2 && lock == true) {
+						snake.direction = 2;
+						lock = false;
+					}
+					break;
+				case 39: // 右
+					if(snake.direction != 1 && snake.direction != 0 && lock == true) {
+						snake.direction = 1;
+						lock = false;
+					}
+
+					break;
+				case 40: //  下
+					if(snake.direction != 3 && snake.direction != 2 && lock == true) {
+						snake.direction = 3;
+						lock = false;
+					}
+					break;
+				default:
+					break;
+			}
+
+		}
+	</script>
+
+</html>
